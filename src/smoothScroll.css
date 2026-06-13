@@ -1,0 +1,47 @@
+/* Lenis Smooth Scrolling compatibility styles */
+
+html.lenis, 
+html.lenis body {
+  height: auto;
+}
+
+/* Ensure smooth scroll behaviour doesn't conflict with browser default */
+.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+/* Specific resets for our custom scrolling containers to prevent conflicts with Lenis scroll animation */
+.main-pane,
+.app-container {
+  scroll-behavior: auto !important;
+}
+
+/* Custom scrollbar adjustments for a clean look with Lenis */
+.main-pane::-webkit-scrollbar,
+.app-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.main-pane::-webkit-scrollbar-thumb,
+.app-container::-webkit-scrollbar-thumb {
+  background: var(--gold-muted);
+  border-radius: 3px;
+  transition: var(--transition);
+}
+
+.main-pane::-webkit-scrollbar-thumb:hover,
+.app-container::-webkit-scrollbar-thumb:hover {
+  background: var(--gold-metallic);
+}
