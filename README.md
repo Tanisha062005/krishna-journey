@@ -1,16 +1,30 @@
-# React + Vite
+## 🎬 Cinematic Assets
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+To keep this repository lightweight while preserving the complete cinematic experience, the videos and high-resolution media assets are hosted separately.
 
-Currently, two official plugins are available:
+### 📥 Download Assets
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Google Drive:
 
-## React Compiler
+https://drive.google.com/file/d/1Zvnfw7kT-ND-fbBFjT4mYqqXcuNGVEeE/view?usp=sharing
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Setup
 
-## Expanding the ESLint configuration
+1. Download the asset package from the Google Drive link above.
+2. Extract the downloaded ZIP/package.
+3. Place the provided assets into the appropriate folders (primarily the `public` directory).
+4. Install dependencies:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+npm install
+```
+
+5. Start the development server:
+
+```bash
+npm run dev
+```
+
+### Note
+
+The cinematic chapter videos are an essential part of **The Eternal Krishna** experience. Without these assets, the chapter-wise journey will not function as intended.
