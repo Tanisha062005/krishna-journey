@@ -4,7 +4,7 @@ import { ChevronRight } from 'lucide-react';
 
 export default function HeroBanner({ onBeginJourney }) {
   return (
-    <section className="hero-banner-container">
+    <section id="home" className="hero-banner-container">
       {/* Left Text Block */}
       <motion.div 
         className="hero-text-block"

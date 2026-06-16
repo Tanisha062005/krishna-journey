@@ -561,6 +561,11 @@ function App() {
     handleChapterClick(0);
   };
 
+  const activeChapterNumber = activeIndex + 1;
+  const paddedChapterNumber = String(activeChapterNumber).padStart(2, '0');
+  const activeVideoSrc = `/videos/chapter${paddedChapterNumber}.mp4`;
+  const activeVideoTitle = chaptersData[activeIndex] ? `Chapter ${paddedChapterNumber}: ${chaptersData[activeIndex].title}` : '';
+
   return (
     <div className={`app-container ${!isSidebarOpen ? 'sidebar-closed' : ''}`}>
       <MorPankhCursor />
@@ -599,7 +604,10 @@ function App() {
                 onChangeActiveIndex={handleChapterClick}
                 chapters={chaptersData}
                 globalActiveIndex={activeIndex}
-                onExplore={chapter.id === '01-prophecy' ? () => setIsVideoOpen(true) : null}
+                onExplore={chapter.id !== '19-studying-sandipani' ? () => {
+                  handleChapterClick(index);
+                  setIsVideoOpen(true);
+                } : null}
               />
             </section>
           ))}
@@ -683,8 +691,11 @@ function App() {
       <VideoModal
         isOpen={isVideoOpen}
         onClose={() => setIsVideoOpen(false)}
-        videoSrc="/videos/chapter01.mp4"
-        title="Chapter 01: The Prophecy"
+        videoSrc={activeVideoSrc}
+        title={activeVideoTitle}
+        activeChapterIndex={activeIndex}
+        onNavigate={handleChapterClick}
+        chapters={chaptersData}
       />
 
       <style dangerouslySetInnerHTML={{__html: `

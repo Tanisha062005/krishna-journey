@@ -59,7 +59,7 @@ export default function TimelineCarousel({ chapters, activeIndex, onChangeActive
   };
 
   return (
-    <div className="timeline-carousel-container">
+    <div id="the-journey" className="timeline-carousel-container">
       {/* Label and Left Navigation Arrow */}
       <div className="timeline-header-control">
         <span className="timeline-label">THE STORY</span>

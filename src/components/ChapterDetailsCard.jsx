@@ -117,15 +117,17 @@ export default function ChapterDetailsCard({ activeChapter, activeIndex, onChang
               {activeChapter.description}
             </p>
 
-            <button
-              className={`btn-gold-outline details-btn ${onExplore ? 'interactive-explore' : ''}`}
-              onClick={onExplore}
-            >
-              Explore Chapter
-              <span className="btn-icon-circle-outline">
-                <ChevronRight size={12} />
-              </span>
-            </button>
+            {onExplore && (
+              <button
+                className={`btn-gold-outline details-btn ${onExplore ? 'interactive-explore' : ''}`}
+                onClick={onExplore}
+              >
+                Explore Chapter
+                <span className="btn-icon-circle-outline">
+                  <ChevronRight size={12} />
+                </span>
+              </button>
+            )}
           </motion.div>
         </AnimatePresence>
       </div>

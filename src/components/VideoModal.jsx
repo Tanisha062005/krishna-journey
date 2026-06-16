@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Pause, RotateCcw, X, ArrowLeft, Volume2, VolumeX } from 'lucide-react';
+import { Play, Pause, RotateCcw, X, ArrowLeft, Volume2, VolumeX, ChevronLeft, ChevronRight } from 'lucide-react';
 
-export default function VideoModal({ isOpen, onClose, videoSrc, title }) {
+export default function VideoModal({ isOpen, onClose, videoSrc, title, activeChapterIndex = 0, onNavigate = () => {}, chapters = [] }) {
   const videoRef = useRef(null);
   const progressBarRef = useRef(null);
   const controlsTimeoutRef = useRef(null);
@@ -61,7 +61,7 @@ export default function VideoModal({ isOpen, onClose, videoSrc, title }) {
 
       return () => clearTimeout(timer);
     }
-  }, [isOpen]);
+  }, [isOpen, videoSrc]);
 
   // Handle controls visibility timeout (fade out controls after 2.5s of inactivity when playing)
   const resetControlsTimeout = () => {
@@ -85,6 +85,31 @@ export default function VideoModal({ isOpen, onClose, videoSrc, title }) {
     };
   }, [isPlaying]);
 
+  const isPrevDisabled = activeChapterIndex === 0;
+  const isNextDisabled = activeChapterIndex === chapters.length - 1;
+
+  const handlePrev = useCallback((e) => {
+    if (e) e.stopPropagation();
+    let targetIndex = activeChapterIndex - 1;
+    if (targetIndex === 18) { // Skip Chapter 19 (0-indexed 18)
+      targetIndex = 17;
+    }
+    if (targetIndex >= 0) {
+      onNavigate(targetIndex);
+    }
+  }, [activeChapterIndex, onNavigate]);
+
+  const handleNext = useCallback((e) => {
+    if (e) e.stopPropagation();
+    let targetIndex = activeChapterIndex + 1;
+    if (targetIndex === 18) { // Skip Chapter 19 (0-indexed 18)
+      targetIndex = 19;
+    }
+    if (targetIndex < chapters.length) {
+      onNavigate(targetIndex);
+    }
+  }, [activeChapterIndex, chapters.length, onNavigate]);
+
   // Handle keyboard hotkeys
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -95,12 +120,18 @@ export default function VideoModal({ isOpen, onClose, videoSrc, title }) {
       } else if (e.key === ' ') {
         e.preventDefault(); // Stop page scrolling
         handlePlayPause();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        handlePrev();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        handleNext();
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, isPlaying, isMuted]);
+  }, [isOpen, isPlaying, isMuted, handlePrev, handleNext]);
 
   const handlePlayPause = () => {
     const video = videoRef.current;
@@ -203,6 +234,16 @@ export default function VideoModal({ isOpen, onClose, videoSrc, title }) {
             </button>
           </div>
 
+          {/* NAVIGATION BUTTONS */}
+          <button 
+            className={`video-nav-btn prev-btn ${controlsVisible ? 'visible' : ''} ${isPrevDisabled ? 'disabled' : ''}`}
+            onClick={handlePrev}
+            title="Previous Chapter"
+            disabled={isPrevDisabled}
+          >
+            <ChevronLeft size={24} />
+          </button>
+
           {/* MAIN VIDEO VIEWPORT CONTAINER */}
           <div className="video-viewport-wrapper" onClick={handlePlayPause}>
             <video
@@ -249,6 +290,15 @@ export default function VideoModal({ isOpen, onClose, videoSrc, title }) {
               )}
             </AnimatePresence>
           </div>
+
+          <button 
+            className={`video-nav-btn next-btn ${controlsVisible ? 'visible' : ''} ${isNextDisabled ? 'disabled' : ''}`}
+            onClick={handleNext}
+            title="Next Chapter"
+            disabled={isNextDisabled}
+          >
+            <ChevronRight size={24} />
+          </button>
 
           {/* BOTTOM CONTROL PANEL */}
           <div className={`video-bottom-panel ${controlsVisible ? 'visible' : ''}`}>
@@ -669,6 +719,63 @@ export default function VideoModal({ isOpen, onClose, videoSrc, title }) {
             }
             .volume-btn.muted:hover {
               color: #fca5a5;
+            }
+
+            /* Navigation Buttons */
+            .video-nav-btn {
+              position: absolute;
+              top: 50%;
+              transform: translateY(-50%);
+              width: 56px;
+              height: 56px;
+              background: rgba(3, 7, 18, 0.4);
+              border: 1px solid rgba(212, 175, 55, 0.2);
+              border-radius: 50%;
+              color: var(--gold-antique, #d4af37);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              cursor: pointer;
+              z-index: 15;
+              opacity: 0;
+              pointer-events: none;
+              transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+            .video-nav-btn.visible {
+              opacity: 1;
+              pointer-events: auto;
+            }
+            .video-nav-btn:hover {
+              background: rgba(212, 175, 55, 0.15);
+              border-color: var(--gold-metallic, #ffd700);
+              color: var(--text-primary, #ffffff);
+              box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+              transform: translateY(-50%) scale(1.08);
+            }
+            .video-nav-btn.prev-btn {
+              left: 32px;
+            }
+            .video-nav-btn.next-btn {
+              right: 32px;
+            }
+            .video-nav-btn.disabled {
+              opacity: 0.15;
+              pointer-events: none;
+              border-color: rgba(255, 255, 255, 0.05);
+              color: var(--text-muted, #a0aec0);
+            }
+
+            @media (max-width: 768px) {
+              .video-nav-btn {
+                width: 42px;
+                height: 42px;
+              }
+              .video-nav-btn.prev-btn {
+                left: 12px;
+              }
+              .video-nav-btn.next-btn {
+                right: 12px;
+              }
             }
           `}} />
         </motion.div>

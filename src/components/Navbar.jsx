@@ -2,7 +2,7 @@ import React from 'react';
 import { Music, VolumeX, Menu } from 'lucide-react';
 
 export default function Navbar({ isAudioPlaying, onToggleAudio, onToggleSidebar }) {
-  const navLinks = ['HOME', 'THE STORY', 'LEELAS', 'GALLERY', 'TEACHINGS', 'ABOUT'];
+  const navLinks = ['HOME', 'THE JOURNEY'];
 
   return (
     <header className="navbar-container">
@@ -40,10 +40,10 @@ export default function Navbar({ isAudioPlaying, onToggleAudio, onToggleSidebar 
           <a
             key={link}
             href={`#${link.toLowerCase().replace(' ', '-')}`}
-            className={`nav-link ${link === 'THE STORY' ? 'active' : ''}`}
+            className={`nav-link ${link === 'THE JOURNEY' ? 'active' : ''}`}
           >
             {link}
-            {link === 'THE STORY' && <span className="nav-link-indicator" />}
+            {link === 'THE JOURNEY' && <span className="nav-link-indicator" />}
           </a>
         ))}
       </nav>
