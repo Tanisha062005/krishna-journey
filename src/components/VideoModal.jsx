@@ -29,6 +29,7 @@ export default function VideoModal({ isOpen, onClose, videoSrc, title, activeCha
       const timer = setTimeout(() => {
         const video = videoRef.current;
         if (video) {
+          video.load(); // Force load of the new source to prevent play interruption errors
           video.currentTime = 0;
           video.muted = false; // Attempt playing with sound first
 
@@ -259,7 +260,7 @@ export default function VideoModal({ isOpen, onClose, videoSrc, title, activeCha
               src={isOpen ? videoSrc : ""}
               className="video-element"
               playsInline
-              preload="none"
+              preload="auto"
               onTimeUpdate={handleTimeUpdate}
               onLoadedMetadata={handleLoadedMetadata}
               onEnded={() => setIsPlaying(false)}

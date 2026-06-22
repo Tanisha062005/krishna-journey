@@ -75,8 +75,27 @@ const Navbar = React.memo(function Navbar({ isAudioPlaying, onToggleAudio, onTog
           width: 100%;
           height: 80px;
           border-bottom: 1px solid rgba(212, 175, 55, 0.1);
-          padding: 0 8px;
-          background: transparent;
+          padding: 0 16px;
+          position: sticky;
+          top: 0;
+          z-index: 100;
+          background: rgba(3, 7, 18, 0.75);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          margin-top: -24px;
+          margin-left: -48px;
+          margin-right: -48px;
+          width: calc(100% + 96px);
+        }
+
+        @media (max-width: 1200px) {
+          .navbar-container {
+            margin-top: -24px;
+            margin-left: -24px;
+            margin-right: -24px;
+            width: calc(100% + 48px);
+            padding: 0 24px;
+          }
         }
 
         .navbar-brand {

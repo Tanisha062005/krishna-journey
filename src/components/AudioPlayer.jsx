@@ -11,6 +11,14 @@ const createNoiseBuffer = (ctx) => {
   return buffer;
 };
 
+// Helper to create noise node
+const createNoiseNode = (ctx, noiseBuffer) => {
+  const source = ctx.createBufferSource();
+  source.buffer = noiseBuffer;
+  source.loop = true;
+  return source;
+};
+
 export default function AudioPlayer({ isPlaying, setIsPlaying, isEpilogue, activeIndex, chapters, showActGate, gateAct }) {
   const synthRef = useRef(null);
 

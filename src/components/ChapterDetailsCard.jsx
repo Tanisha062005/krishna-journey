@@ -66,12 +66,15 @@ export default function ChapterDetailsCard({ activeChapter, activeIndex, onChang
   const isReversed = activeIndex % 2 !== 0;
 
   const [activeHotspot, setActiveHotspot] = React.useState(null);
+  const [isLocked, setIsLocked] = React.useState(false);
 
   React.useEffect(() => {
     setActiveHotspot(null);
+    setIsLocked(false);
   }, [activeChapter.id]);
 
   const handleHotspotInteraction = (hotspot, isEnter) => {
+    if (isLocked) return;
     if (isEnter) {
       setActiveHotspot(hotspot);
     } else {
@@ -80,7 +83,13 @@ export default function ChapterDetailsCard({ activeChapter, activeIndex, onChang
   };
 
   const handleHotspotClick = (hotspot) => {
-    setActiveHotspot(prev => (prev && prev.id === hotspot.id && prev.title === hotspot.title) ? null : hotspot);
+    if (activeHotspot && activeHotspot.id === hotspot.id && isLocked) {
+      setActiveHotspot(null);
+      setIsLocked(false);
+    } else {
+      setActiveHotspot(hotspot);
+      setIsLocked(true);
+    }
   };
 
   return (
@@ -153,21 +162,26 @@ export default function ChapterDetailsCard({ activeChapter, activeIndex, onChang
               <ChapterParallaxOverlay chapterId={activeChapter.id} />
             )}
 
-            {/* Hotspots rendering - grouped on the side of the image frame */}
-            <div className="hotspots-sidebar">
-              {hotspotsConfig[activeChapter.id]?.map((hotspot) => (
-                <button
-                  key={hotspot.id}
-                  className={`sacred-hotspot devotional-hotspot ${activeHotspot?.id === hotspot.id ? 'active' : ''}`}
-                  onMouseEnter={() => handleHotspotInteraction(hotspot, true)}
-                  onMouseLeave={() => handleHotspotInteraction(hotspot, false)}
-                  onClick={() => handleHotspotClick(hotspot)}
-                  aria-label={`Spiritual Symbolism: ${hotspot.title}`}
-                >
-                  <HotspotLeafSvg />
-                </button>
-              ))}
-            </div>
+            {/* Hotspots rendering - placed directly on the image frame */}
+            {hotspotsConfig[activeChapter.id]?.map((hotspot) => (
+              <button
+                key={hotspot.id}
+                className={`sacred-hotspot devotional-hotspot ${activeHotspot?.id === hotspot.id ? 'active' : ''}`}
+                style={{
+                  position: 'absolute',
+                  left: hotspot.x,
+                  top: hotspot.y,
+                  transform: 'translate(-50%, -50%)',
+                  zIndex: 8
+                }}
+                onMouseEnter={() => handleHotspotInteraction(hotspot, true)}
+                onMouseLeave={() => handleHotspotInteraction(hotspot, false)}
+                onClick={() => handleHotspotClick(hotspot)}
+                aria-label={`Spiritual Symbolism: ${hotspot.title}`}
+              >
+                <HotspotLeafSvg />
+              </button>
+            ))}
 
             {/* Glassmorphic tooltip popup */}
             <AnimatePresence>
@@ -189,6 +203,7 @@ export default function ChapterDetailsCard({ activeChapter, activeIndex, onChang
                     onClick={(e) => {
                       e.stopPropagation();
                       setActiveHotspot(null);
+                      setIsLocked(false);
                     }}
                     aria-label="Close tooltip"
                   >

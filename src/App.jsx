@@ -350,12 +350,12 @@ function App() {
   const [currentGateShloka, setCurrentGateShloka] = useState({ sanskrit: '', transliteration: '', translation: '' });
   const lastShownShlokasRef = useRef({});
 
-
   const lenisRef = useRef(null);
   const isScrollingFromClick = useRef(false);
   const activeIndexRef = useRef(activeIndex);
   const activeDebounceTimeout = useRef(null);
   const prevActRef = useRef(activeAct);
+  const gateTimerRef = useRef(null);
 
   useEffect(() => {
     activeIndexRef.current = activeIndex;
@@ -372,39 +372,55 @@ function App() {
     }
   }, [activeIndex, activeAct]);
 
+  const triggerActGate = (targetAct) => {
+    if (gateTimerRef.current) {
+      clearTimeout(gateTimerRef.current);
+    }
+
+    const pool = SHLOKA_POOLS[targetAct] || [];
+    if (pool.length > 0) {
+      const lastShown = lastShownShlokasRef.current[targetAct];
+      const filteredPool = pool.filter(shloka => shloka.sanskrit !== lastShown);
+      const chosenShloka = filteredPool[Math.floor(Math.random() * filteredPool.length)] || pool[0];
+      
+      setCurrentGateShloka(chosenShloka);
+      lastShownShlokasRef.current[targetAct] = chosenShloka.sanskrit;
+    }
+
+    setGateAct(targetAct);
+    setShowActGate(true);
+    
+    if (lenisRef.current) {
+      lenisRef.current.stop();
+    }
+    
+    gateTimerRef.current = setTimeout(() => {
+      setShowActGate(false);
+      if (lenisRef.current) {
+        lenisRef.current.start();
+      }
+    }, 8000);
+  };
+
   // Manage transition overlay timer and scroll locking based strictly on activeAct changes
   useEffect(() => {
     if (prevActRef.current !== activeAct) {
       prevActRef.current = activeAct;
 
-      const pool = SHLOKA_POOLS[activeAct] || [];
-      if (pool.length > 0) {
-        const lastShown = lastShownShlokasRef.current[activeAct];
-        // Filter out the last shown shloka if the pool has more than 1 item
-        const filteredPool = pool.filter(shloka => shloka.sanskrit !== lastShown);
-        const chosenShloka = filteredPool[Math.floor(Math.random() * filteredPool.length)] || pool[0];
-        
-        setCurrentGateShloka(chosenShloka);
-        lastShownShlokasRef.current[activeAct] = chosenShloka.sanskrit;
+      // Only trigger immediately if NOT scrolling from click
+      if (!isScrollingFromClick.current) {
+        triggerActGate(activeAct);
       }
-
-      setGateAct(activeAct);
-      setShowActGate(true);
-      
-      if (lenisRef.current) {
-        lenisRef.current.stop();
-      }
-      
-      const timer = setTimeout(() => {
-        setShowActGate(false);
-        if (lenisRef.current) {
-          lenisRef.current.start();
-        }
-      }, 8000); // 8 seconds display duration
-
-      return () => clearTimeout(timer);
     }
   }, [activeAct]);
+
+  useEffect(() => {
+    return () => {
+      if (gateTimerRef.current) {
+        clearTimeout(gateTimerRef.current);
+      }
+    };
+  }, []);
 
 
   // Initialize and manage Lenis smooth scrolling and Intersection Observer responsive to desktop vs mobile container layouts
@@ -631,17 +647,26 @@ function App() {
   }, [activeIndex]);
 
   const handleChapterClick = (index) => {
+    const prevChapter = chaptersData[activeIndexRef.current];
+    const newChapter = chaptersData[index];
+
     setActiveIndex(index);
     isScrollingFromClick.current = true;
 
     const targetSelector = `#chapter-section-${index}`;
+    
+    const onScrollDone = () => {
+      isScrollingFromClick.current = false;
+      if (prevChapter && newChapter && prevChapter.act !== newChapter.act) {
+        triggerActGate(newChapter.act);
+      }
+    };
+
     if (lenisRef.current) {
       lenisRef.current.scrollTo(targetSelector, {
         duration: 1.2,
         onComplete: () => {
-          setTimeout(() => {
-            isScrollingFromClick.current = false;
-          }, 150);
+          setTimeout(onScrollDone, 150);
         }
       });
     } else {
@@ -649,9 +674,7 @@ function App() {
       if (targetElement) {
         targetElement.scrollIntoView({ behavior: 'smooth' });
       }
-      setTimeout(() => {
-        isScrollingFromClick.current = false;
-      }, 1200);
+      setTimeout(onScrollDone, 1200);
     }
   };
 
@@ -775,6 +798,9 @@ function App() {
               <button 
                 className="gate-skip-btn"
                 onClick={() => {
+                  if (gateTimerRef.current) {
+                    clearTimeout(gateTimerRef.current);
+                  }
                   setShowActGate(false);
                   if (lenisRef.current) {
                     lenisRef.current.start();
