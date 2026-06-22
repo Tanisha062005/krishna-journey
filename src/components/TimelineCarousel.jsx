@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-export default function TimelineCarousel({ chapters, activeIndex, onChangeActiveIndex }) {
+const TimelineCarousel = React.memo(function TimelineCarousel({ chapters, activeIndex, onChangeActiveIndex }) {
   const scrollRef = useRef(null);
 
   // Auto-scroll horizontal timeline to the active node
@@ -295,4 +295,6 @@ export default function TimelineCarousel({ chapters, activeIndex, onChangeActive
       `}} />
     </div>
   );
-}
+});
+
+export default TimelineCarousel;

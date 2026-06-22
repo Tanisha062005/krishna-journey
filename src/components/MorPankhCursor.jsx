@@ -57,14 +57,22 @@ export default function MorPankhCursor() {
       setIsVisible(true);
     };
 
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        setIsVisible(false);
+      }
+    };
+
     window.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseleave', handleMouseLeave);
     document.addEventListener('mouseenter', handleMouseEnter);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseleave', handleMouseLeave);
       document.removeEventListener('mouseenter', handleMouseEnter);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [enabled]);
 
@@ -161,6 +169,17 @@ export default function MorPankhCursor() {
     };
   }, [enabled, isVisible]);
 
+  const [isTabVisible, setIsTabVisible] = useState(true);
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      setIsTabVisible(document.visibilityState === 'visible');
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
+
   if (!enabled) return null;
 
   return (
@@ -207,7 +226,7 @@ export default function MorPankhCursor() {
       </div>
 
       {/* Gold dust particle container */}
-      <div ref={particlesContainerRef} className="mor-pankh-particles" />
+      <div ref={particlesContainerRef} className={`mor-pankh-particles ${!isTabVisible ? 'paused' : ''}`} />
 
       {/* Style overrides to hide default cursor globally and configure particles */}
       <style dangerouslySetInnerHTML={{__html: `

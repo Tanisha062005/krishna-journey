@@ -808,6 +808,18 @@ button {
   color: var(--gold-metallic);
   text-shadow: 0 0 15px rgba(212, 175, 55, 0.35);
   margin: 12px 0;
+  white-space: pre-line;
+}
+
+.gate-transliteration {
+  font-family: var(--font-serif-body);
+  font-size: 15px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.8);
+  max-width: 650px;
+  margin-bottom: 8px;
+  font-style: normal;
+  white-space: pre-line;
 }
 
 .gate-translation {
@@ -819,10 +831,50 @@ button {
   max-width: 600px;
 }
 
+.gate-skip-btn {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  color: var(--gold-antique);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  padding: 8px 20px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  background: rgba(5, 12, 33, 0.4);
+  transition: all 0.3s ease;
+  margin-top: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.gate-skip-btn:hover {
+  border-color: var(--gold-metallic);
+  color: #fff;
+  background: rgba(212, 175, 55, 0.1);
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+}
+
+/* Pause animations for inactive states or hidden tab */
+.cinematic-effects-container.paused .dust-particle,
+.cinematic-effects-container.paused .firefly,
+.cinematic-effects-container.paused .light-ray {
+  animation-play-state: paused !important;
+}
+
+.mor-pankh-particles.paused .gold-dust-particle {
+  animation-play-state: paused !important;
+}
+
 @media (max-width: 768px) {
   .gate-sanskrit {
     font-size: 20px;
     line-height: 1.4;
+  }
+  .gate-transliteration {
+    font-size: 13px;
   }
   .gate-translation {
     font-size: 14px;

@@ -8,7 +8,7 @@ import RightSidebar from './components/RightSidebar';
 import AudioPlayer from './components/AudioPlayer';
 import EpilogueOverlay from './components/EpilogueOverlay';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu } from 'lucide-react';
+import { Menu, ChevronRight } from 'lucide-react';
 import VideoModal from './components/VideoModal';
 import CinematicEffects from './components/CinematicEffects';
 import MorPankhCursor from './components/MorPankhCursor';
@@ -217,36 +217,97 @@ const chaptersData = [
   }
 ];
 
-const getActVerse = (act) => {
-  switch (act) {
-    case 'I':
-      return {
-        sanskrit: 'यदा यदा हि धर्मस्य ग्लानिर्भवति भारत । अभ्युत्थानमधर्मस्य तदात्मानं सृजाम्यहम् ॥',
-        translation: 'Whenever righteousness declines and unrighteousness prevails, I manifest Myself on Earth.'
-      };
-    case 'II':
-      return {
-        sanskrit: 'परित्राणाय साधूनां विनाशाय च दुष्कृताम् । धर्मसंस्थापनार्थाय सम्भवामि युगे युगे ॥',
-        translation: 'To protect the righteous, destroy the wicked, and re-establish dharma, I am born age after age.'
-      };
-    case 'III':
-      return {
-        sanskrit: 'विद्याविनयसम्पन्ने ब्राह्मणे गवि हस्तिनि । शुनि चैव श्वपाके च पण्डिताः समदर्शिनः ॥',
-        translation: 'The wise look upon a learned scholar, a cow, an elephant, a dog, and an outcast with equal eye.'
-      };
-    case 'IV':
-      return {
-        sanskrit: 'पत्रं पुष्पं फलं तोयं यो मे भक्त्या प्रयच्छति । तदहं भक्त्युपहृतमश्नामि प्रयतात्मनः ॥',
-        translation: 'Whoever offers Me with devotion a leaf, a flower, a fruit, or water, I accept it with love.'
-      };
-    case 'EPILOGUE':
-      return {
-        sanskrit: 'सर्वधर्मान्परित्यज्य मामेकं शरणं व्रज । अहं त्वां सर्वपापेभ्यो मोक्षयिष्यामि मा शुचः ॥',
-        translation: 'Abandon all varieties of religion and just surrender unto Me. I shall deliver you from all sins; do not fear.'
-      };
-    default:
-      return { sanskrit: '', translation: '' };
-  }
+const SHLOKA_POOLS = {
+  'I': [
+    {
+      sanskrit: 'यदा यदा हि धर्मस्य ग्लानिर्भवति भारत ।\nअभ्युत्थानमधर्मस्य तदात्मानं सृजाम्यहम् ॥',
+      transliteration: 'yadā yadā hi dharmasya glānir bhavati bhārata |\nabhyutthānam adharmasya tadātmānaṁ sṛjāmy aham ||',
+      translation: 'Whenever righteousness declines and unrighteousness prevails, I manifest Myself on Earth.'
+    },
+    {
+      sanskrit: 'परित्राणाय साधूनां विनाशाय च दुष्कृताम् ।\nधर्मसंस्थापनार्थाय सम्भवामि युगे युगे ॥',
+      transliteration: 'paritrāṇāya sādhūnāṁ vināśāya ca duṣkṛtām |\ndharma-saṁsthāpanārthāya sambhavāmi yuge yuge ||',
+      translation: 'To protect the righteous, destroy the wicked, and re-establish dharma, I appear age after age.'
+    },
+    {
+      sanskrit: 'अनन्याश्चिन्तयन्तो मां ये जनाः पर्युपासते ।\nतेषां नित्याभियुक्तानां योगक्षेमं वहाम्यहम् ॥',
+      transliteration: 'ananyāś cintayanto māṁ ye janāḥ paryupāsate |\nteṣāṁ nityābhiyuktānāṁ yoga-kṣemaṁ vahāmy aham ||',
+      translation: 'For those who are always absorbed in thoughts of My divine presence, I preserve what they have and carry what they lack.'
+    },
+    {
+      sanskrit: 'जन्म कर्म च मे दिव्यमेवं यो वेत्ति तत्त्वतः ।\nत्यक्त्वा देहं पुनर्जन्म नैति मामेति सोऽर्जुन ॥',
+      transliteration: 'janma karma ca me divyam evaṁ yo vetti tattvataḥ |\ntyaktvā dehaṁ punar janma naiti mām eti so ’rjuna ||',
+      translation: 'One who knows the divine nature of My appearance and activities does not take birth again.'
+    }
+  ],
+  'II': [
+    {
+      sanskrit: 'तस्मात्त्वमुत्तिष्ठ यशो लभस्व जित्वा शत्रून् भुङ्क्ष्व राज्यं समृद्धम् ।\nमयैवैते निहताः पूर्वमेव निमित्तमात्रं भव सव्यसाचिन् ॥',
+      transliteration: 'tasmāt tvam uttiṣṭha yaśo labhasva jitvā śatrūn bhuṅkṣva rājyaṁ samṛddham |\nmayaivāte nihatāḥ pūrvam eva nimitta-mātraṁ bhava savya-sācin ||',
+      translation: 'Therefore stand up, win glory, and conquer your enemies. They are already slain by Me; be but an instrument.'
+    },
+    {
+      sanskrit: 'नष्टो मोहः स्मृतिर्लब्धा त्वत्प्रसादान्मयाच्युत ।\nस्थितोऽस्मि गतसन्देहः करिष्ये वचनं तव ॥',
+      transliteration: 'naṣṭo mohaḥ smṛtir labdhā tvat-prasādān mayācyuta |\nsthito ’smi gata-sandehaḥ kariṣye vacanaṁ tava ||',
+      translation: 'My delusion is gone and memory is regained by Your grace. I stand free from doubt, ready to follow Your will.'
+    },
+    {
+      sanskrit: 'यत्र योगेश्वरः कृष्णो यत्र पार्थो धनुर्धरः ।\nतत्र श्रीर्विजयो भूतिर्ध्रुवा नीतिर्मतिर्मम ॥',
+      transliteration: 'yatra yogeśvaraḥ kṛṣṇo yatra pārtho dhanur-dharaḥ |\ntatra śrīr vijayo bhūtir dhruvā nītir matir mama ||',
+      translation: 'Wherever there is Krishna, the Lord of Yoga, and Arjuna, the supreme archer, there will be prosperity and victory.'
+    }
+  ],
+  'III': [
+    {
+      sanskrit: 'तद्विद्धि प्रणिपातेन परिप्रश्नेन सेवया ।\nउपदेक्ष्यन्ति ते ज्ञानं ज्ञानिनस्तत्त्वदर्शिनः ॥',
+      transliteration: 'tad viddhi praṇipātena paripraśnena sevayā |\nupadekṣyanti te jñānaṁ jñāninas tattva-darśinaḥ ||',
+      translation: 'Learn the truth by submitting to a spiritual master, inquiring submissively, and rendering service.'
+    },
+    {
+      sanskrit: 'विद्याविनयसम्पन्ने ब्राह्मणे गवि हस्तिनि ।\nशुनि चैव श्वपाके च पण्डिताः समदर्शिनः ॥',
+      transliteration: 'vidyā-vinaya-sampanne brāhmaṇe gavi hastini |\nśuni caiva śvapāke ca paṇḍitāḥ sama-darśinaḥ ||',
+      translation: 'The wise look upon a learned scholar, a cow, an elephant, a dog, and an outcast with equal vision.'
+    },
+    {
+      sanskrit: 'न हि ज्ञानेन सदृशं पवित्रमिह विद्यते ।\nतत्स्वयं योगसंसिद्धः कालेनात्मनि विन्दति ॥',
+      transliteration: 'na hi jñānena sadṛśaṁ pavitram iha विद्यते |\ntat svayaṁ yoga-saṁsiddhaḥ kālenātmani vindati ||',
+      translation: 'In this world, there is nothing as purifying as divine knowledge. One perfected in yoga finds it within in due time.'
+    }
+  ],
+  'IV': [
+    {
+      sanskrit: 'पत्रं पुष्पं फलं तोयं यो मे भक्त्या प्रयच्छति ।\nतदहं भक्त्युपहृतमश्नामि प्रयतात्मनः ॥',
+      transliteration: 'patraṁ puṣpaṁ phalaṁ toyaṁ yo me bhaktyā prayacchati |\ntad ahaṁ bhakty-upahṛtam aśnāmi prayatātmanaḥ ||',
+      translation: 'If one offers Me with love and devotion a leaf, a flower, a fruit, or water, I will accept it.'
+    },
+    {
+      sanskrit: 'यत्करोषि यदश्नासि यज्जुहोषि ददासि यत् ।\nयत्तपस्यसि कौन्तेय तत्कुरुष्व मदर्पणम् ॥',
+      transliteration: 'yat karoṣi yad aśnāsi yaj juhoṣi dadāsi yat |\nyat tapasyasi kaunteya tat kuruṣva mad-arpaṇam ||',
+      translation: 'Whatever you do, whatever you eat, whatever you offer or give away, do that as an offering to Me.'
+    },
+    {
+      sanskrit: 'मन्मना भव मद्भक्तो मद्याजी मां नमस्कुरु ।\nमामेवैष्यसि सत्यं ते प्रतिजाने प्रियोऽसि मे ॥',
+      transliteration: 'man-manā bhava mad-bhakto mad-yājī māṁ namaskuru |\nmām evaiṣyasi satyaṁ te  pratijāne priyo ’si me ||',
+      translation: 'Always think of Me, become My devotee, worship Me, and offer your homage. You will surely come to Me.'
+    }
+  ],
+  'EPILOGUE': [
+    {
+      sanskrit: 'सर्वधर्मान्परित्यज्य मामेकं शरणं व्रज ।\nअहं त्वां सर्वपापेभ्यो मोक्षयिष्यामि मा शुचः ॥',
+      transliteration: 'sarva-dharmān parityajya mām ekaṁ śaraṇaṁ vraja |\nahaṁ tvāṁ sarva-pāpebhyo mokṣayiṣyāmi mā śucaḥ ||',
+      translation: 'Abandon all varieties of religion and just surrender unto Me. I shall deliver you from all sins; do not fear.'
+    },
+    {
+      sanskrit: 'कर्मण्येवाधिकारस्ते मा फलेषु कदाचन ।\nमा कर्मफलहेतुर्भूर्मा ते सङ्गोऽस्त्वकर्मणि ॥',
+      transliteration: 'karmaṇy-evādhikāras te mā phaleṣu kadācana |\nmā karma-phala-hetur bhūr mā te saṅgo ’stv akarmaṇi ||',
+      translation: 'You have a right to perform your prescribed duty, but you are not entitled to the fruits of activity.'
+    },
+    {
+      sanskrit: 'अहं सर्वस्य प्रभवो मत्तः सर्वं प्रवर्तते ।\nइति मत्वा भजन्ते मां बुधा भावसमन्विताः ॥',
+      transliteration: 'ahaṁ sarvasya prabhavo mattaḥ sarvaṁ pravartate |\niti matvā bhajante māṁ budhā bhāva-samanvitāḥ ||',
+      translation: 'I am the source of all spiritual and material worlds. Everything flows from Me. Understanding this, the wise worship Me.'
+    }
+  ]
 };
 
 const getChapterShloka = (chapterId) => {
@@ -286,13 +347,15 @@ function App() {
   const [activeAct, setActiveAct] = useState(chaptersData[1]?.act || 'I');
   const [showActGate, setShowActGate] = useState(false);
   const [gateAct, setGateAct] = useState(null);
+  const [currentGateShloka, setCurrentGateShloka] = useState({ sanskrit: '', transliteration: '', translation: '' });
+  const lastShownShlokasRef = useRef({});
 
 
   const lenisRef = useRef(null);
   const isScrollingFromClick = useRef(false);
   const activeIndexRef = useRef(activeIndex);
   const activeDebounceTimeout = useRef(null);
-  const isInitialMount = useRef(true);
+  const prevActRef = useRef(activeAct);
 
   useEffect(() => {
     activeIndexRef.current = activeIndex;
@@ -311,26 +374,36 @@ function App() {
 
   // Manage transition overlay timer and scroll locking based strictly on activeAct changes
   useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      return;
-    }
+    if (prevActRef.current !== activeAct) {
+      prevActRef.current = activeAct;
 
-    setGateAct(activeAct);
-    setShowActGate(true);
-    
-    if (lenisRef.current) {
-      lenisRef.current.stop();
-    }
-    
-    const timer = setTimeout(() => {
-      setShowActGate(false);
-      if (lenisRef.current) {
-        lenisRef.current.start();
+      const pool = SHLOKA_POOLS[activeAct] || [];
+      if (pool.length > 0) {
+        const lastShown = lastShownShlokasRef.current[activeAct];
+        // Filter out the last shown shloka if the pool has more than 1 item
+        const filteredPool = pool.filter(shloka => shloka.sanskrit !== lastShown);
+        const chosenShloka = filteredPool[Math.floor(Math.random() * filteredPool.length)] || pool[0];
+        
+        setCurrentGateShloka(chosenShloka);
+        lastShownShlokasRef.current[activeAct] = chosenShloka.sanskrit;
       }
-    }, 4000);
 
-    return () => clearTimeout(timer);
+      setGateAct(activeAct);
+      setShowActGate(true);
+      
+      if (lenisRef.current) {
+        lenisRef.current.stop();
+      }
+      
+      const timer = setTimeout(() => {
+        setShowActGate(false);
+        if (lenisRef.current) {
+          lenisRef.current.start();
+        }
+      }, 8000); // 8 seconds display duration
+
+      return () => clearTimeout(timer);
+    }
   }, [activeAct]);
 
 
@@ -338,6 +411,7 @@ function App() {
   useEffect(() => {
     let lenisInstance = null;
     let animationFrameId = null;
+    let scrollRafId = null;
     let observer = null;
     let activeContainer = null;
     let scrollHandler = null;
@@ -349,6 +423,9 @@ function App() {
       }
       if (animationFrameId) {
         cancelAnimationFrame(animationFrameId);
+      }
+      if (scrollRafId) {
+        cancelAnimationFrame(scrollRafId);
       }
       if (observer) {
         observer.disconnect();
@@ -386,10 +463,17 @@ function App() {
         // Setup Intersection Observer for scroll synchronization
         const sections = container.querySelectorAll('.chapter-section-wrapper');
         const intersectionRatios = {};
+        const visibleSectionIndices = new Set();
+        const previouslyVisibleIndices = new Set();
 
         observer = new IntersectionObserver((entries) => {
           entries.forEach(entry => {
-            const index = entry.target.getAttribute('data-index');
+            const index = parseInt(entry.target.getAttribute('data-index'), 10);
+            if (entry.isIntersecting) {
+              visibleSectionIndices.add(index);
+            } else {
+              visibleSectionIndices.delete(index);
+            }
             intersectionRatios[index] = entry.intersectionRatio;
           });
 
@@ -436,30 +520,41 @@ function App() {
 
         // Parallax scroll coordination
         const handleScroll = () => {
-          const scrollTop = container.scrollTop || 0;
-          const scrollHeight = container.scrollHeight || 1;
-          const clientHeight = container.clientHeight || 1;
-          const maxScroll = scrollHeight - clientHeight;
-          const globalProgress = maxScroll > 0 ? scrollTop / maxScroll : 0;
+          if (scrollRafId) return;
 
-          document.documentElement.style.setProperty('--global-scroll-progress', globalProgress);
+          scrollRafId = requestAnimationFrame(() => {
+            scrollRafId = null;
+            const scrollTop = container.scrollTop || 0;
+            const scrollHeight = container.scrollHeight || 1;
+            const clientHeight = container.clientHeight || 1;
+            const maxScroll = scrollHeight - clientHeight;
+            const globalProgress = maxScroll > 0 ? scrollTop / maxScroll : 0;
 
-          const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-          if (isMobile || reduceMotion) {
-            sections.forEach((sec) => {
-              sec.style.setProperty('--scroll-progress', 0);
+            document.documentElement.style.setProperty('--global-scroll-progress', globalProgress);
+
+            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (isMobile || reduceMotion) {
+              sections.forEach((sec) => {
+                sec.style.setProperty('--scroll-progress', 0);
+              });
+              return;
+            }
+
+            const viewportHeight = window.innerHeight;
+            sections.forEach((sec, idx) => {
+              if (visibleSectionIndices.has(idx)) {
+                const rect = sec.getBoundingClientRect();
+                const sectionCenter = rect.top + rect.height / 2;
+                const viewportCenter = viewportHeight / 2;
+                const distance = sectionCenter - viewportCenter;
+                const progress = distance / viewportHeight;
+                sec.style.setProperty('--scroll-progress', progress);
+                previouslyVisibleIndices.add(idx);
+              } else if (previouslyVisibleIndices.has(idx)) {
+                sec.style.setProperty('--scroll-progress', 0);
+                previouslyVisibleIndices.delete(idx);
+              }
             });
-            return;
-          }
-
-          const viewportHeight = window.innerHeight;
-          sections.forEach((sec) => {
-            const rect = sec.getBoundingClientRect();
-            const sectionCenter = rect.top + rect.height / 2;
-            const viewportCenter = viewportHeight / 2;
-            const distance = sectionCenter - viewportCenter;
-            const progress = distance / viewportHeight;
-            sec.style.setProperty('--scroll-progress', progress);
           });
         };
 
@@ -496,6 +591,9 @@ function App() {
       }
       if (animationFrameId) {
         cancelAnimationFrame(animationFrameId);
+      }
+      if (scrollRafId) {
+        cancelAnimationFrame(scrollRafId);
       }
       if (observer) {
         observer.disconnect();
@@ -569,7 +667,7 @@ function App() {
   return (
     <div className={`app-container ${!isSidebarOpen ? 'sidebar-closed' : ''}`}>
       <MorPankhCursor />
-      <CinematicEffects />
+      <CinematicEffects isPaused={isVideoOpen || showActGate} />
 
       {/* 1. Main Content Left Side (73% width) */}
       <main className="main-pane">
@@ -659,13 +757,33 @@ function App() {
             <motion.div
               className="gate-content"
               initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -20, opacity: 0 }}
-              transition={{ delay: 0.4, duration: 0.8 }}
+              animate={{ 
+                y: 0, 
+                opacity: 1,
+                transition: { delay: 0.4, duration: 0.8 }
+              }}
+              exit={{ 
+                y: -20, 
+                opacity: 0,
+                transition: { duration: 0.6 }
+              }}
             >
               <span className="gate-act-title">ACT {gateAct}</span>
-              <h2 className="gate-sanskrit">{getActVerse(gateAct).sanskrit}</h2>
-              <p className="gate-translation">"{getActVerse(gateAct).translation}"</p>
+              <h2 className="gate-sanskrit">{currentGateShloka.sanskrit}</h2>
+              <p className="gate-transliteration">{currentGateShloka.transliteration}</p>
+              <p className="gate-translation">"{currentGateShloka.translation}"</p>
+              <button 
+                className="gate-skip-btn"
+                onClick={() => {
+                  setShowActGate(false);
+                  if (lenisRef.current) {
+                    lenisRef.current.start();
+                  }
+                }}
+              >
+                Skip
+                <ChevronRight size={14} />
+              </button>
             </motion.div>
           </motion.div>
         )}

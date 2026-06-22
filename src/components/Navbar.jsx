@@ -1,7 +1,7 @@
 import React from 'react';
 import { Music, VolumeX, Menu } from 'lucide-react';
 
-export default function Navbar({ isAudioPlaying, onToggleAudio, onToggleSidebar }) {
+const Navbar = React.memo(function Navbar({ isAudioPlaying, onToggleAudio, onToggleSidebar }) {
   const navLinks = ['HOME', 'THE JOURNEY'];
 
   return (
@@ -167,4 +167,6 @@ export default function Navbar({ isAudioPlaying, onToggleAudio, onToggleSidebar 
       `}} />
     </header>
   );
-}
+});
+
+export default Navbar;

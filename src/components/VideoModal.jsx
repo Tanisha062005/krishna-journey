@@ -110,10 +110,16 @@ export default function VideoModal({ isOpen, onClose, videoSrc, title, activeCha
     }
   }, [activeChapterIndex, chapters.length, onNavigate]);
 
+  const stateRef = useRef({ isOpen, isPlaying, isMuted });
+  stateRef.current = { isOpen, isPlaying, isMuted };
+  const callbacksRef = useRef({});
+
   // Handle keyboard hotkeys
   useEffect(() => {
+    if (!isOpen) return;
+
     const handleKeyDown = (e) => {
-      if (!isOpen) return;
+      const { handlePrev, handleNext, handlePlayPause, onClose } = callbacksRef.current;
 
       if (e.key === 'Escape') {
         onClose();
@@ -131,7 +137,7 @@ export default function VideoModal({ isOpen, onClose, videoSrc, title, activeCha
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, isPlaying, isMuted, handlePrev, handleNext]);
+  }, [isOpen]);
 
   const handlePlayPause = () => {
     const video = videoRef.current;
@@ -208,6 +214,8 @@ export default function VideoModal({ isOpen, onClose, videoSrc, title, activeCha
     return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   };
 
+  callbacksRef.current = { handlePrev, handleNext, handlePlayPause, onClose };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -248,9 +256,10 @@ export default function VideoModal({ isOpen, onClose, videoSrc, title, activeCha
           <div className="video-viewport-wrapper" onClick={handlePlayPause}>
             <video
               ref={videoRef}
-              src={videoSrc}
+              src={isOpen ? videoSrc : ""}
               className="video-element"
               playsInline
+              preload="none"
               onTimeUpdate={handleTimeUpdate}
               onLoadedMetadata={handleLoadedMetadata}
               onEnded={() => setIsPlaying(false)}

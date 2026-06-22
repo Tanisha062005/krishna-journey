@@ -147,8 +147,11 @@ export default function ChapterDetailsCard({ activeChapter, activeIndex, onChang
               src={chapterImage}
               alt={activeChapter.title}
               className="details-scenic-image"
+              loading="lazy"
             />
-            <ChapterParallaxOverlay chapterId={activeChapter.id} />
+            {globalActiveIndex === activeIndex && (
+              <ChapterParallaxOverlay chapterId={activeChapter.id} />
+            )}
 
             {/* Hotspots rendering - grouped on the side of the image frame */}
             <div className="hotspots-sidebar">

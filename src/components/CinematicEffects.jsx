@@ -28,9 +28,23 @@ const FIREFLIES_CONFIG = [
   { size: 4, left: 94, top: 80, duration: 17, delay: 0.5 }
 ];
 
-export default function CinematicEffects() {
+export default function CinematicEffects({ isPaused }) {
+  const [isTabVisible, setIsTabVisible] = React.useState(true);
+
+  React.useEffect(() => {
+    const handleVisibilityChange = () => {
+      setIsTabVisible(document.visibilityState === 'visible');
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
+
+  const shouldPause = isPaused || !isTabVisible;
+
   return (
-    <div className="cinematic-effects-container" aria-hidden="true">
+    <div className={`cinematic-effects-container ${shouldPause ? 'paused' : ''}`} aria-hidden="true">
       {/* Slow-moving light rays */}
       <div className="light-ray ray-1" />
       <div className="light-ray ray-2" />

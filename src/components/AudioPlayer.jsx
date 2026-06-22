@@ -275,17 +275,24 @@ export default function AudioPlayer({ isPlaying, setIsPlaying, isEpilogue, activ
     };
 
     // First context activation trigger on browser rules
+    let resumeContext = null;
     if (ctx.state === 'suspended') {
-      const resumeContext = () => {
+      resumeContext = () => {
         ctx.resume();
-        window.removeEventListener('click', resumeContext);
-        window.removeEventListener('scroll', resumeContext);
+        if (resumeContext) {
+          window.removeEventListener('click', resumeContext);
+          window.removeEventListener('scroll', resumeContext);
+        }
       };
       window.addEventListener('click', resumeContext);
       window.addEventListener('scroll', resumeContext);
     }
 
     return () => {
+      if (resumeContext) {
+        window.removeEventListener('click', resumeContext);
+        window.removeEventListener('scroll', resumeContext);
+      }
       cleanupSynth();
     };
   }, [isPlaying]);
